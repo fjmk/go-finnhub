@@ -1,11 +1,12 @@
-package news
+package news_test
 
 import (
 	"errors"
 	"reflect"
 	"testing"
 
-	"github.com/m1/go-finnhub"
+	"github.com/llonchj/go-finnhub"
+	"github.com/llonchj/go-finnhub/news"
 )
 
 var (
@@ -27,7 +28,7 @@ func NewBackendMock() *BackendMock {
 
 func (b BackendMock) Get(path string, params finnhub.URLParams, response interface{}) error {
 	switch path {
-	case URLNews:
+	case news.URLNews:
 		news := response.(*[]finnhub.News)
 		*news = mockNewsNoCat
 
@@ -56,7 +57,7 @@ func (b BackendMock) Get(path string, params finnhub.URLParams, response interfa
 		}
 
 		return nil
-	case URLSentiment:
+	case news.URLSentiment:
 		sentiment := response.(*finnhub.NewsSentiment)
 		*sentiment = mockSentimentExample1
 		switch params[finnhub.ParamSymbol] {
@@ -115,7 +116,7 @@ func TestClient_Get(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &news.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.Get(tt.args.args)
@@ -165,7 +166,7 @@ func TestClient_GetCompany(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &news.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetCompany(tt.args.symbol)
@@ -215,7 +216,7 @@ func TestClient_GetSentiment(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &news.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetSentiment(tt.args.symbol)

@@ -1,4 +1,4 @@
-package forex
+package forex_test
 
 import (
 	"errors"
@@ -7,7 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/m1/go-finnhub"
+	"github.com/llonchj/go-finnhub"
+	"github.com/llonchj/go-finnhub/forex"
 )
 
 var (
@@ -32,10 +33,10 @@ func NewBackendMock() *BackendMock {
 
 func (b BackendMock) Get(path string, params finnhub.URLParams, response interface{}) error {
 	switch path {
-	case URLExchange:
+	case forex.URLExchange:
 		exchanges := response.(*[]string)
 		*exchanges = mockExchanges
-	case URLSymbol:
+	case forex.URLSymbol:
 		symbols := response.(*[]finnhub.Symbol)
 		*symbols = mockExchange1Symbols
 		switch params[finnhub.ParamExchange] {
@@ -46,7 +47,7 @@ func (b BackendMock) Get(path string, params finnhub.URLParams, response interfa
 		default:
 			return errMock
 		}
-	case URLCandle:
+	case forex.URLCandle:
 		candles := response.(*finnhub.Candle)
 		*candles = mockCandle1
 		if params[finnhub.ParamCount] == "20" {
@@ -84,7 +85,7 @@ func TestClient_GetExchanges(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &forex.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetExchanges()
@@ -128,7 +129,7 @@ func TestClient_GetSymbols(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &forex.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetSymbols(tt.args.exchange)
@@ -184,7 +185,7 @@ func TestClient_GetCandle(t *testing.T) {
 			name:    "invalid no args",
 			fields:  fields{API: NewBackendMock()},
 			args:    args{args: &finnhub.CandleParams{}},
-			wantErr: ErrCandlesWrongParams,
+			wantErr: forex.ErrCandlesWrongParams,
 		},
 		{
 			name:   "valid with nil",
@@ -196,12 +197,12 @@ func TestClient_GetCandle(t *testing.T) {
 			name:    "candle no status",
 			fields:  fields{API: NewBackendMock()},
 			args:    args{symbol: mockCandleNoStatusCompany.Name, args: &finnhub.CandleParams{Count: &count500}},
-			wantErr: ErrCandleNoData,
+			wantErr: forex.ErrCandleNoData,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &forex.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetCandle(tt.args.symbol, tt.args.resolution, tt.args.args)

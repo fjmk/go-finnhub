@@ -1,7 +1,8 @@
 package finnhub
 
-// Exchange is the data structure for forex/crypto exchanges
+// Exchange is the abstract data structure for exchanges
 type Exchange struct {
-	Code string `json:"code"`
-	Name string `json:"name"`
+	Name     string `json:"name"`
+	Code     string `json:"omitempty,code"`
+	Currency string `json:"omitempty,currency"`
 }

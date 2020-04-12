@@ -1,7 +1,7 @@
 package news
 
 import (
-	"github.com/m1/go-finnhub"
+	"github.com/llonchj/go-finnhub"
 )
 
 const (

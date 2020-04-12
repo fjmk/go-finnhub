@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/m1/go-finnhub"
+	"github.com/llonchj/go-finnhub"
 )
 
 const (

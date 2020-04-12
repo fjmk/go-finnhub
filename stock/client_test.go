@@ -1,4 +1,4 @@
-package stock
+package stock_test
 
 import (
 	"errors"
@@ -7,13 +7,20 @@ import (
 	"testing"
 	"time"
 
-	"github.com/m1/go-finnhub"
+	"github.com/llonchj/go-finnhub"
+	"github.com/llonchj/go-finnhub/stock"
 )
 
 var (
-	mockCompany123      = finnhub.Company{Name: "company-123"}
-	mockCompanyAbc      = finnhub.Company{Name: "company-abc"}
-	mockCeo             = finnhub.CEO{Name: "ceo-123"}
+	mockCompany123 = finnhub.Company{Name: "company-123"}
+	mockCompanyAbc = finnhub.Company{Name: "company-abc"}
+	mockExecutives = finnhub.CompanyExecutives{
+		Executive: []finnhub.CompanyExecutive{
+			finnhub.CompanyExecutive{
+				Name: "John Doe",
+			},
+		},
+	}
 	mockRecommendations = []finnhub.Recommendation{
 		{Symbol: "abc"},
 		{Symbol: "123"},
@@ -53,7 +60,7 @@ func NewBackendMock() *BackendMock {
 
 func (b BackendMock) Get(path string, params finnhub.URLParams, response interface{}) error {
 	switch path {
-	case URLProfile:
+	case stock.URLProfile:
 		company := response.(*finnhub.Company)
 		switch params[finnhub.ParamSymbol] {
 		case mockCompany123.Name:
@@ -63,16 +70,16 @@ func (b BackendMock) Get(path string, params finnhub.URLParams, response interfa
 		default:
 			return errMock
 		}
-	case URLCEOCompensation:
-		ceo := response.(*finnhub.CEO)
-		*ceo = mockCeo
+	case stock.URLExecutive:
+		executives := response.(*finnhub.CompanyExecutives)
+		*executives = mockExecutives
 		switch params[finnhub.ParamSymbol] {
-		case mockCeo.Name:
-			*ceo = mockCeo
+		case mockExecutives.Executive[0].Name:
+			*executives = mockExecutives
 		default:
 			return errMock
 		}
-	case URLRecommendation:
+	case stock.URLRecommendation:
 		recommendations := response.(*[]finnhub.Recommendation)
 		*recommendations = mockRecommendations
 		switch params[finnhub.ParamSymbol] {
@@ -81,7 +88,7 @@ func (b BackendMock) Get(path string, params finnhub.URLParams, response interfa
 		default:
 			return errMock
 		}
-	case URLPriceTarget:
+	case stock.URLPriceTarget:
 		target := response.(*finnhub.PriceTarget)
 		*target = mockPriceTarget
 		switch params[finnhub.ParamSymbol] {
@@ -90,7 +97,7 @@ func (b BackendMock) Get(path string, params finnhub.URLParams, response interfa
 		default:
 			return errMock
 		}
-	case URLOptionChain:
+	case stock.URLOptionChain:
 		chain := response.(*finnhub.OptionChain)
 		*chain = mockOptionChain
 		switch params[finnhub.ParamSymbol] {
@@ -99,7 +106,7 @@ func (b BackendMock) Get(path string, params finnhub.URLParams, response interfa
 		default:
 			return errMock
 		}
-	case URLPeers:
+	case stock.URLPeers:
 		peers := response.(*[]string)
 		*peers = mockPeers
 		switch params[finnhub.ParamSymbol] {
@@ -108,7 +115,7 @@ func (b BackendMock) Get(path string, params finnhub.URLParams, response interfa
 		default:
 			return errMock
 		}
-	case URLEarnings:
+	case stock.URLEarnings:
 		earnings := response.(*[]finnhub.Earning)
 		*earnings = mockEarnings
 		switch params[finnhub.ParamSymbol] {
@@ -117,10 +124,10 @@ func (b BackendMock) Get(path string, params finnhub.URLParams, response interfa
 		default:
 			return errMock
 		}
-	case URLExchange:
+	case stock.URLExchange:
 		exchanges := response.(*[]finnhub.Exchange)
 		*exchanges = mockExchanges
-	case URLSymbol:
+	case stock.URLSymbol:
 		symbols := response.(*[]finnhub.Symbol)
 		*symbols = mockSymbolsExchange1
 		switch params[finnhub.ParamExchange] {
@@ -131,7 +138,7 @@ func (b BackendMock) Get(path string, params finnhub.URLParams, response interfa
 		default:
 			return errMock
 		}
-	case URLQuote:
+	case stock.URLQuote:
 		quote := response.(*finnhub.Quote)
 		*quote = mockQuoteCompany123
 		switch params[finnhub.ParamSymbol] {
@@ -142,7 +149,7 @@ func (b BackendMock) Get(path string, params finnhub.URLParams, response interfa
 		default:
 			return errMock
 		}
-	case URLGradings:
+	case stock.URLGradings:
 		gradings := response.(*[]finnhub.Grading)
 		*gradings = mockGradingsBlank
 		switch params[finnhub.ParamSymbol] {
@@ -153,7 +160,7 @@ func (b BackendMock) Get(path string, params finnhub.URLParams, response interfa
 		default:
 			return errMock
 		}
-	case URLCandle:
+	case stock.URLCandle:
 		candles := response.(*finnhub.Candle)
 		*candles = mockCandle1
 		if params[finnhub.ParamCount] == "20" {
@@ -208,7 +215,7 @@ func TestClient_GetProfile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &stock.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetProfile(tt.args.symbol)
@@ -234,14 +241,14 @@ func TestClient_GetCEO(t *testing.T) {
 		name    string
 		fields  fields
 		args    args
-		want    *finnhub.CEO
+		want    *finnhub.CompanyExecutives
 		wantErr error
 	}{
 		{
 			name:   "valid",
 			fields: fields{API: NewBackendMock()},
-			args:   args{symbol: mockCeo.Name},
-			want:   &mockCeo,
+			args:   args{symbol: mockExecutives.Executive[0].Name},
+			want:   &mockExecutives,
 		},
 		{
 			name:    "error",
@@ -252,10 +259,10 @@ func TestClient_GetCEO(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &stock.Client{
 				API: tt.fields.API,
 			}
-			got, err := c.GetCEO(tt.args.symbol)
+			got, err := c.GetExecutive(tt.args.symbol)
 			if (err != nil) != (tt.wantErr != nil) || err != tt.wantErr {
 				t.Errorf("GetCEO() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -296,7 +303,7 @@ func TestClient_GetRecommendations(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &stock.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetRecommendations(tt.args.symbol)
@@ -340,7 +347,7 @@ func TestClient_GetPriceTarget(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &stock.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetPriceTarget(tt.args.symbol)
@@ -384,7 +391,7 @@ func TestClient_GetOptionChain(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &stock.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetOptionChain(tt.args.symbol)
@@ -428,7 +435,7 @@ func TestClient_GetPeers(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &stock.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetPeers(tt.args.symbol)
@@ -472,7 +479,7 @@ func TestClient_GetEarnings(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &stock.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetEarnings(tt.args.symbol)
@@ -505,7 +512,7 @@ func TestClient_GetExchanges(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &stock.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetExchanges()
@@ -562,7 +569,7 @@ func TestClient_GetCandle(t *testing.T) {
 			name:    "invalid no args",
 			fields:  fields{API: NewBackendMock()},
 			args:    args{args: &finnhub.CandleParams{}},
-			wantErr: ErrCandlesWrongParams,
+			wantErr: stock.ErrCandlesWrongParams,
 		},
 		{
 			name:   "valid with nil",
@@ -574,12 +581,12 @@ func TestClient_GetCandle(t *testing.T) {
 			name:    "candle no status",
 			fields:  fields{API: NewBackendMock()},
 			args:    args{symbol: mockCandleNoStatusCompany.Name, args: &finnhub.CandleParams{Count: &count500}},
-			wantErr: ErrCandleNoData,
+			wantErr: stock.ErrCandleNoData,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &stock.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetCandle(tt.args.symbol, tt.args.resolution, tt.args.args)
@@ -623,7 +630,7 @@ func TestClient_GetSymbols(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &stock.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetSymbols(tt.args.exchange)
@@ -673,7 +680,7 @@ func TestClient_GetQuote(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &stock.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetQuote(tt.args.symbol)
@@ -717,7 +724,7 @@ func TestClient_GetGradings(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Client{
+			c := &stock.Client{
 				API: tt.fields.API,
 			}
 			got, err := c.GetGradings(tt.args.args)

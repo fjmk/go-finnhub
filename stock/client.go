@@ -4,15 +4,15 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/m1/go-finnhub"
+	"github.com/llonchj/go-finnhub"
 )
 
 const (
 	// URLProfile profile endpoint url
 	URLProfile = "stock/profile"
 
-	// URLCEOCompensation ceo compensation endpoint url
-	URLCEOCompensation = "stock/ceo-compensation"
+	// URLExecutive for executive and board members endpoint url
+	URLExecutive = "stock/executive"
 
 	// URLRecommendation recommnedation endpoint url
 	URLRecommendation = "stock/recommendation"
@@ -65,12 +65,12 @@ func (c *Client) GetProfile(symbol string) (*finnhub.Company, error) {
 	return &company, err
 }
 
-// GetCEO gets latest company's CEO compensation. This endpoint only available
+// GetExecutive gets latest company's CEO compensation. This endpoint only available
 // for US companies
-func (c *Client) GetCEO(symbol string) (*finnhub.CEO, error) {
-	var ceo finnhub.CEO
-	err := c.API.Get(URLCEOCompensation, finnhub.URLParams{finnhub.ParamSymbol: symbol}, &ceo)
-	return &ceo, err
+func (c *Client) GetExecutive(symbol string) (*finnhub.CompanyExecutives, error) {
+	var executives finnhub.CompanyExecutives
+	err := c.API.Get(URLExecutive, finnhub.URLParams{finnhub.ParamSymbol: symbol}, &executives)
+	return &executives, err
 }
 
 // GetRecommendations gets latest analyst recommendation trends for a company

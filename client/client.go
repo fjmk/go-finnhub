@@ -1,10 +1,10 @@
 package client
 
 import (
-	"github.com/m1/go-finnhub/crypto"
-	"github.com/m1/go-finnhub/forex"
-	"github.com/m1/go-finnhub/news"
-	"github.com/m1/go-finnhub/stock"
+	"github.com/llonchj/go-finnhub/crypto"
+	"github.com/llonchj/go-finnhub/forex"
+	"github.com/llonchj/go-finnhub/news"
+	"github.com/llonchj/go-finnhub/stock"
 )
 
 const (

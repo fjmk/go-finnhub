@@ -1,22 +1,26 @@
 # go-finnhub
 
-[![GoDoc](https://godoc.org/github.com/m1/go-finnhub?status.svg)](https://godoc.org/github.com/m1/go-finnhub)
-[![Build Status](https://travis-ci.org/m1/go-finnhub.svg?branch=master)](https://travis-ci.org/m1/go-finnhub)
-[![Go Report Card](https://goreportcard.com/badge/github.com/m1/go-finnhub)](https://goreportcard.com/report/github.com/m1/go-finnhub)
-[![Release](https://img.shields.io/github/release/m1/go-finnhub.svg)](https://github.com/m1/go-finnhub/releases/latest)
-[![codecov](https://codecov.io/gh/m1/go-finnhub/branch/master/graph/badge.svg)](https://codecov.io/gh/m1/go-finnhub)
+> This repository was forked from github.com/llonchj/go-finnhub. Thanks @m1!
+> At this point, the API is unstable and might change.
+
+[![GoDoc](https://godoc.org/github.com/llonchj/go-finnhub?status.svg)](https://godoc.org/github.com/llonchj/go-finnhub)
+[![Build Status](https://travis-ci.org/llonchj/go-finnhub.svg?branch=master)](https://travis-ci.org/llonchj/go-finnhub)
+[![Go Report Card](https://goreportcard.com/badge/github.com/llonchj/go-finnhub)](https://goreportcard.com/report/github.com/llonchj/go-finnhub)
+[![Release](https://img.shields.io/github/release/llonchj/go-finnhub.svg)](https://github.com/llonchj/go-finnhub/releases/latest)
+[![codecov](https://codecov.io/gh/llonchj/go-finnhub/branch/master/graph/badge.svg)](https://codecov.io/gh/llonchj/go-finnhub)
 
 __Simple and easy to use client for stock, forex and crpyto data from [finnhub.io](https://finnhub.io/) written in Go. Access real-time market data from 60+ stock exchanges, 10 forex brokers, and 15+ crypto exchanges__
 
 ## Installation
 
-`go get github.com/m1/go-finnhub`
+`go get github.com/llonchj/go-finnhub`
 
 ## Usage
 
 First sign up for your api token here [finnhub.io](https://finnhub.io/)
 
-Follow this basic example, for more in-depth documentation see the [docs](https://godoc.org/github.com/m1/go-finnhub):
+Follow this basic example, for more in-depth documentation see the [docs](https://godoc.org/github.com/llonchj/go-finnhub):
+
 ```go
 c := client.New("your_token_here")
 
